@@ -1037,6 +1037,16 @@ bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
 }
 EXPORT_SYMBOL_GPL(kvm_cpuid);
 
+bool kvm_cpuid_customLeaf(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx, u32 *ecx, u32 *edx)
+{
+	 *eax = 0x00000001;
+	 *ebx = 0x00000002;
+	 *ecx = 0x00000003;
+	 *edx = 0x00000004;
+	 return true;
+}
+EXPORT_SYMBOL_GPL(kvm_cpuid_customLeaf);
+
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
 	u32 eax, ebx, ecx, edx;
@@ -1046,7 +1056,12 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 
 	eax = kvm_rax_read(vcpu);
 	ecx = kvm_rcx_read(vcpu);
+if(eax == 0x4FFFFFFF ||  eax == 0x4FFFFFFE || eax == 0x4FFFFFFD || eax == 0x4FFFFFFC) {
+	 kvm_cpuid_customLeaf(vcpu, &eax, &ebx, &ecx, &edx);
+}
+else {
 	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
+}	
 	kvm_rax_write(vcpu, eax);
 	kvm_rbx_write(vcpu, ebx);
 	kvm_rcx_write(vcpu, ecx);
