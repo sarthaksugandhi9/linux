@@ -1037,9 +1037,18 @@ bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
 }
 EXPORT_SYMBOL_GPL(kvm_cpuid);
 
+int interruptCounterForCpuid = 0;
+EXPORT_SYMBOL(interruptCounterForCpuid);
+
 bool kvm_cpuid_customLeaf(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx, u32 *ecx, u32 *edx)
 {
-	 *eax = 0x00000001;
+if(*eax == 0x4FFFFFFF) {
+        *eax = interruptCounterForCpuid;
+}
+else {
+	*eax = 0x00000000;
+}
+
 	 *ebx = 0x00000002;
 	 *ecx = 0x00000003;
 	 *edx = 0x00000004;
