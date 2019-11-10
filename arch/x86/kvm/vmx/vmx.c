@@ -5856,6 +5856,7 @@ void dump_vmcs(void)
 
 
 extern int interruptCounterForCpuid;
+extern int counterForIpt[2][69];
 
 /*
  * The guest has exited.  See if we can fix it or if we need userspace
@@ -5867,6 +5868,12 @@ interruptCounterForCpuid = interruptCounterForCpuid+1;
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	u32 exit_reason = vmx->exit_reason;
 	u32 vectoring_info = vmx->idt_vectoring_info;
+
+
+	if(exit_reason < 69){
+        counterForIpt[1][exit_reason] = counterForIpt[1][exit_reason] + 1;
+	}
+
 
 	trace_kvm_exit(exit_reason, vcpu, KVM_ISA_VMX);
 

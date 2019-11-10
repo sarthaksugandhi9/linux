@@ -1040,18 +1040,39 @@ EXPORT_SYMBOL_GPL(kvm_cpuid);
 int interruptCounterForCpuid = 0;
 EXPORT_SYMBOL(interruptCounterForCpuid);
 
+int counterForIpt[2][69] ={
+            {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}            
+            };
+EXPORT_SYMBOL(counterForIpt);	
+
 bool kvm_cpuid_customLeaf(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx, u32 *ecx, u32 *edx)
 {
 if(*eax == 0x4FFFFFFF) {
         *eax = interruptCounterForCpuid;
 }
+else if(*eax == 0x4FFFFFFD) {
+       *eax = 0x00000000;
+
+
+	if(*ecx <69)
+{  
+
+
+
+                *eax = counterForIpt[1][*ecx];
+            }
+
+        
+
+}
 else {
 	*eax = 0x00000000;
 }
 
-	 *ebx = 0x00000002;
-	 *ecx = 0x00000003;
-	 *edx = 0x00000004;
+	 *ebx = 0x00000000;
+	 *ecx = 0x00000000;
+	 *edx = 0x00000000;
 	 return true;
 }
 EXPORT_SYMBOL_GPL(kvm_cpuid_customLeaf);
