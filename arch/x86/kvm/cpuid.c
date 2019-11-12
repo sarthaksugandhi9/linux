@@ -1049,6 +1049,10 @@ EXPORT_SYMBOL(counterForIpt);
 bool kvm_cpuid_customLeaf(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx, u32 *ecx, u32 *edx)
 {
 if(*eax == 0x4FFFFFFF) {
+*ebx = 0x00000000;
+         *ecx = 0x00000000;
+         *edx = 0x00000000;
+
         *eax = interruptCounterForCpuid;
 }
 else if(*eax == 0x4FFFFFFD) {
@@ -1061,18 +1065,27 @@ else if(*eax == 0x4FFFFFFD) {
 
 
                 *eax = counterForIpt[1][*ecx];
+*ebx = 0x00000000;
+         *ecx = 0x00000000;
+         *edx = 0x00000000;
             }
-
+			else {
+			*eax = 0x00000000;
+			*ebx = 0x00000000;
+			*ecx = 0x00000000;
+			*edx = 0xFFFFFFFF;
+			}
         
 
 }
 else {
 	*eax = 0x00000000;
-}
+
 
 	 *ebx = 0x00000000;
 	 *ecx = 0x00000000;
 	 *edx = 0x00000000;
+}
 	 return true;
 }
 EXPORT_SYMBOL_GPL(kvm_cpuid_customLeaf);
