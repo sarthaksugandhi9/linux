@@ -5857,13 +5857,14 @@ void dump_vmcs(void)
 
 extern int interruptCounterForCpuid;
 extern int counterForIpt[2][69];
-
+extern atomic_t exitTotalTime;
 /*
  * The guest has exited.  See if we can fix it or if we need userspace
  * assistance.
  */
 static int vmx_handle_exit(struct kvm_vcpu *vcpu)
 {
+	u64 start = rdtsc();
 interruptCounterForCpuid = interruptCounterForCpuid+1;
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	u32 exit_reason = vmx->exit_reason;
@@ -5956,8 +5957,12 @@ interruptCounterForCpuid = interruptCounterForCpuid+1;
 	}
 
 	if (exit_reason < kvm_vmx_max_exit_handlers
-	    && kvm_vmx_exit_handlers[exit_reason])
-		return kvm_vmx_exit_handlers[exit_reason](vcpu);
+	    && kvm_vmx_exit_handlers[exit_reason]){
+		int resultTemp =  kvm_vmx_exit_handlers[exit_reason](vcpu);
+		u64 end = rdtsc();
+                exitTotalTime = exitTotalTime + (end - start);
+		return resultTemp;
+	}
 	else {
 		vcpu_unimpl(vcpu, "vmx: unexpected exit reason 0x%x\n",
 				exit_reason);
