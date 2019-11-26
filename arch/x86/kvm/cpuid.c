@@ -24,6 +24,8 @@
 #include "trace.h"
 #include "pmu.h"
 
+#include <linux/atomic.h>
+
 static u32 xstate_required_size(u64 xstate_bv, bool compacted)
 {
 	int feature_bit = 0;
@@ -1039,7 +1041,7 @@ EXPORT_SYMBOL_GPL(kvm_cpuid);
 
 int interruptCounterForCpuid = 0;
 EXPORT_SYMBOL(interruptCounterForCpuid);
-atomic_t exitTotalTime = ATOMIC_INIT(0);
+atomic64_t exitTotalTime = ATOMIC_INIT(0);
 EXPORT_SYMBOL(exitTotalTime);
 
 int counterForIpt[2][69] ={
@@ -1081,8 +1083,9 @@ else if(*eax == 0x4FFFFFFD) {
 
 }
 else if(*eax == 0x4FFFFFFE) {
-	*ebx = (int)((int)exitTotalTime >> 32);
-         *ecx = (int)exitTotalTime & 0xffffffff;
+printk(KERN_INFO "CPUID total time: %llu",atomic64_read(&exitTotalTime));
+	*ebx = atomic64_read(&exitTotalTime) >> 32;
+         *ecx = atomic64_read(&exitTotalTime) & 0xffffffff;
          *edx = 0x00000000;
         *eax = 0x00000000;
 }
