@@ -5858,6 +5858,7 @@ void dump_vmcs(void)
 extern int interruptCounterForCpuid;
 extern int counterForIpt[2][69];
 extern atomic64_t exitTotalTime;
+extern atomic64_t timerForIpt[2][69];
 /*
  * The guest has exited.  See if we can fix it or if we need userspace
  * assistance.
@@ -5962,6 +5963,11 @@ printk(KERN_INFO "EXIT_REASON: %u", exit_reason);
 		
                 u64 timeTaken = rdtsc() - start;
 atomic64_add(timeTaken,&exitTotalTime);
+//u64 timeTaken = rdtsc() - start;
+//atomic64_add(timeTaken,&exitTotalTime);
+if(exit_reason < 69){
+atomic64_add(timeTaken,&timerForIpt[1][exit_reason]);
+}
 		return resultTemp;
 	}
 	else {
