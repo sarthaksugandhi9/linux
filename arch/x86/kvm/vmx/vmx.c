@@ -5870,7 +5870,7 @@ interruptCounterForCpuid = interruptCounterForCpuid+1;
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	u32 exit_reason = vmx->exit_reason;
 	u32 vectoring_info = vmx->idt_vectoring_info;
-printk(KERN_INFO "EXIT_REASON: %u", exit_reason);
+
 
 	if(exit_reason < 69){
         counterForIpt[1][exit_reason] = counterForIpt[1][exit_reason] + 1;
